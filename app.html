@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="ArcGIS JS v4, Calcite Maps and Bootstrap Example">
+
+    <title>Esri App Challenge</title>
+
+    <!-- Calcite Maps Bootstrap -->
+    <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.10.css">
+    <!--link rel="stylesheet" href="http://localhost/GitHub/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.10.css"-->
+
+    <!-- Calcite Maps -->
+    <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-arcgis-4.x.min-v0.10.css">
+    <!--link rel="stylesheet" href="http://localhost/GitHub/calcite-maps/dist/css/calcite-maps-arcgis-4.x.min-v0.10.css"-->
+
+    <!-- ArcGIS JS 4 -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body class="calcite-maps calcite-nav-top">
+<!-- Navbar -->
+
+<nav class="navbar calcite-navbar navbar-fixed-top calcite-text-light calcite-bg-dark">
+    <!-- Menu -->
+    <div class="dropdown calcite-dropdown calcite-text-dark calcite-bg-light" role="presentation">
+        <a class="dropdown-toggle" role="menubutton" aria-haspopup="true" aria-expanded="false" tabindex="0">
+            <div class="calcite-dropdown-toggle">
+                <span class="sr-only">Toggle dropdown menu</span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+            <li><a role="menuitem" tabindex="0" data-target="#panelInfo" aria-haspopup="true"><span
+                    class="glyphicon glyphicon-info-sign"></span> About</a></li>
+            <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLegend" aria-haspopup="true"><span
+                    class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
+            <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span
+                    class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li>
+        </ul>
+    </div>
+    <!-- Title -->
+    <div class="calcite-title calcite-overflow-hidden">
+        <span class="calcite-title-main">Transportation Justice</span>
+        <span class="calcite-title-divider hidden-xs"></span>
+        <span class="calcite-title-sub hidden-xs">text text text</span>
+    </div>
+    <!-- Nav -->
+    <ul class="nav navbar-nav calcite-nav">
+        <li>
+            <div class="calcite-navbar-search calcite-search-expander">
+                <div id="searchWidgetDiv"></div>
+            </div>
+        </li>
+    </ul>
+</nav>
+
+<!--/.calcite-navbar -->
+
+<!-- Map  -->
+
+<div class="calcite-map calcite-map-absolute">
+    <div id="mapViewDiv"></div>
+</div>
+
+<!-- /.calcite-map -->
+
+<!-- Panels -->
+
+<div class="calcite-panels calcite-panels-right calcite-text-light calcite-bg-dark panel-group">
+
+    <!-- Panel - Basemaps -->
+
+    <div id="panelInfo" class="panel collapse in">
+        <div id="headingInfo" class="panel-heading" role="tab">
+            <div class="panel-title">
+                <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseInfo" aria-expanded="true"
+                   aria-controls="collapseInfo"><span class="glyphicon glyphicon-info-sign"
+                                                      aria-hidden="true"></span><span
+                        class="panel-label">Settings</span></a>
+                <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelInfo"><span
+                        class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+            </div>
+        </div>
+
+
+        <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
+            <div class="panel-body">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#title" aria-controls="title" role="tab" data-toggle="tab">Directions</a></li>
+                    <li role="presentation"><a href="#map" aria-controls="map" role="tab" data-toggle="tab">Service
+                        Area</a></li>
+                </ul>
+
+                <div class="tab-content">
+
+                    <!-- Tab -Title -->
+
+                    <div role="tabpanel" class="tab-pane active" id="title">
+                        <div class="calcite-form-title">Set Origin & Destination</div>
+                        <div class="form-horizontal calcite-form-padding">
+                            <div class="form-group">
+                                <!--<label for="settingsTitleInput" class="col-xs-3 control-label">Origin</label>-->
+                                <label for="SrcInput" class="col-xs-3">Origin</label>
+                                <div class="col-xs-9">
+                                    <div id="SrcInput" class="calcite-form-search"></div>
+                                    <!--<input type="text" class="form-control" id="settingsTitleInput" placeholder="{Choose origin point, or click on the map}">-->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <!--<label for="settingsSubTitleInput" class="col-xs-3 control-label">Destination</label>-->
+                                <label for="DstInput" class="col-xs-3">Destination</label>
+                                <div class="col-xs-9">
+                                    <div id="DstInput" class="calcite-form-search"></div>
+                                    <!--<input type="text" class="form-control" id="settingsSubTitleInput" placeholder="{Choose destination point, or click on the map}">-->
+                                </div>
+                            </div>
+
+
+                            <!--<div class="form-group">
+                            <label for="progval" >Time box:</label>
+                            <input id="progval" data-dojo-type="dijit.form.DateTextBox" />
+                            </div>-->
+
+
+                        </div>
+
+
+                    </div>
+
+                    <!-- Tab - Map -->
+
+                    <div role="tabpanel" class="tab-pane" id="map">
+                        <div class="calcite-form-title">Set the origin</div>
+                        <div class="form-horizontal calcite-form-padding">
+                            <div class="form-group">
+                                <label for="originContainer" class="col-xs-3 control-label">Location</label>
+                                <div class="col-xs-9">
+                                    <div id="originContainer" class="calcite-form-search"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="selectTravelTime" class="col-xs-3 control-label">Time</label>
+                                <div class="col-xs-9">
+                                    <select id="selectTravelTime" class="form-control">
+                                        <option value="15">15</option>
+                                        <option value="30">30</option>
+                                        <option value="45">45</option>
+                                        <option value="60">60</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div><!-- /.tab-content -->
+            </div><!-- /.panel-body -->
+        </div><!-- /.panel-collapse -->
+
+
+    </div>
+
+    <!-- Panel - Legend -->
+
+    <div id="panelLegend" class="panel collapse">
+        <div id="headingLegend" class="panel-heading" role="tab">
+            <div class="panel-title">
+                <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLegend"
+                   aria-expanded="false" aria-controls="collapseLegend"><span class="glyphicon glyphicon-list-alt"
+                                                                              aria-hidden="true"></span><span
+                        class="panel-label">Legend</span></a>
+                <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLegend"><span
+                        class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
+            </div>
+        </div>
+        <div id="collapseLegend" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLegend">
+            <div class="panel-body">
+                <div id="legendDiv"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- /.calcite-panels -->
+
+<script type="text/javascript">
+    var dojoConfig = {
+        packages: [{
+            name: "bootstrap",
+            location: location.pathname.replace(/\/[^/]+$/, "") + "/dist/vendor/dojo-bootstrap"
+        },
+            {
+                name: "calcite-maps",
+                location: location.pathname.replace(/\/[^/]+$/, "") + "/dist/js/dojo"
+
+            }]
+    };
+</script>
+
+<!-- ArcGIS JS 4 -->
+<script src="https://js.arcgis.com/4.10/"></script>
+
+<script>
+
+    require([
+        // ArcGIS
+        "esri/Map",
+        "esri/views/MapView",
+
+        // Widgets
+        "esri/widgets/Home",
+        "esri/widgets/Zoom",
+        "esri/widgets/Search",
+        "esri/widgets/Legend",
+        "esri/widgets/ScaleBar",
+        "esri/widgets/Attribution",
+
+        "esri/Graphic",
+        "esri/geometry/support/webMercatorUtils",
+        "esri/tasks/Locator",
+        "esri/layers/GraphicsLayer",
+        "esri/tasks/RouteTask",
+        "esri/tasks/support/RouteParameters",
+        "esri/tasks/support/FeatureSet",
+        "esri/tasks/ServiceAreaTask",
+        "esri/tasks/support/ServiceAreaParameters",
+
+        // Bootstrap
+        "bootstrap/Collapse",
+        "bootstrap/Dropdown",
+
+        // Calcite Maps
+        "calcite-maps/calcitemaps-v0.10",
+
+        // Calcite Maps ArcGIS Support
+        "calcite-maps/calcitemaps-arcgis-support-v0.10",
+
+        "dijit/form/TimeTextBox",
+        "dojo/query",
+        "dojo/domReady!"
+    ], function (Map, MapView, Home, Zoom, Search, Legend, ScaleBar, Attribution, Graphic, webMercatorUtils, Locator,
+                 GraphicsLayer, RouteTask, RouteParameters, FeatureSet, ServiceAreaTask, ServiceAreaParameters, Collapse,
+                 Dropdown, CalciteMaps, CalciteMapArcGISSupport, TimeTextBox, query) {
+
+        /******************************************************************
+         *
+         * Create the map, view and widgets
+         *
+         ******************************************************************/
+
+        var mapMode = 1;
+
+        var routeLayer = new GraphicsLayer();
+        // Map
+        var map = new Map({
+            basemap: "dark-gray-vector",
+            layers: [routeLayer] // Add the route layer to the map
+        });
+
+        // View
+        var mapView = new MapView({
+            container: "mapViewDiv",
+            map: map,
+            zoom: 10, // Sets zoom level based on level of detail (LOD)
+            center: [-79.4163, 43.70011], // Sets center point of view using longitude,latitude
+            padding: {
+                top: 50,
+                bottom: 0
+            },
+            ui: {components: []}
+        });
+
+        // Popup and panel sync
+        mapView.when(function () {
+            CalciteMapArcGISSupport.setPopupPanelSync(mapView);
+        });
+
+        // Search - add to navbar
+        var srcSearchWidget = new Search({
+            container: "SrcInput",
+            view: mapView,
+            locationEnabled: false,
+            autoSelect: false,
+            placeholder: "Choose origin point, or click on the map"
+        });
+        var dstSearchWidget = new Search({
+            container: "DstInput",
+            view: mapView,
+            locationEnabled: false,
+            autoSelect: false
+        });
+        //CalciteMapArcGISSupport.setSearchExpandEvents(searchWidget);
+
+        var timeText = new TimeTextBox({
+            name: "progval", value: new Date(),
+            constraints: {
+                timePattern: 'HH:mm:ss',
+                clickableIncrement: 'T00:15:00',
+                visibleIncrement: 'T00:15:00',
+                visibleRange: 'T01:00:00'
+            }
+        }, "progval");
+
+
+        // Map widgets
+        var home = new Home({
+            view: mapView
+        });
+        mapView.ui.add(home, "top-left");
+
+        var zoom = new Zoom({
+            view: mapView
+        });
+        mapView.ui.add(zoom, "top-left");
+
+
+        var scaleBar = new ScaleBar({
+            view: mapView
+        });
+        mapView.ui.add(scaleBar, "bottom-left");
+
+        var attribution = new Attribution({
+            view: mapView
+        });
+        mapView.ui.add(attribution, "manual");
+
+        // Panel widgets - add legend
+        var legendWidget = new Legend({
+            container: "legendDiv",
+            view: mapView
+        });
+
+        var srcGraphic, dstGraphic;
+        var srcDropPinActive = false;
+        var dstDropPinActive = false;
+
+        // Create a symbol for drawing the point
+        var srcMarkerSymbol = {
+            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+            color: "#DC143C",
+            outline: {
+                // autocasts as new SimpleLineSymbol()
+                color: [255, 255, 255],
+                width: 2
+            }
+        };
+        var dstMarkerSymbol = {
+            type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+            color: "#228B22",
+            outline: {
+                // autocasts as new SimpleLineSymbol()
+                color: [255, 255, 255],
+                width: 2
+            }
+        };
+        var routeSymbol = {
+            type: "simple-line", // autocasts as SimpleLineSymbol()
+            color: [255, 255, 255, 0.5],
+            width: 5
+        };
+
+        mapView.on("click", function (event) {
+            //console.log("click event: ", event);
+            //var point = mapView.toMap({x: event.x, y: event.y});
+            //console.log(point);
+            //var mp = webMercatorUtils.webMercatorToGeographic(point);
+            //console.log(mp);
+
+            switch (mapMode) {
+                case 0:
+                    addGraphic(event.mapPoint);
+                    break;
+                case 1:
+                    computeServiceArea(event.mapPoint);
+            }
+        });
+
+
+        var locatorTask = new Locator({
+            url:
+                "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+        });
+
+        var routeTask = new RouteTask({
+            url:
+                "https://utility.arcgis.com/usrsvcs/appservices/skHSU1JsOEZauhMu/rest/services/World/Route/NAServer/Route_World/solve"
+        });
+        // Setup the route parameters
+        var routeParams = new RouteParameters({
+            stops: new FeatureSet(),
+            outSpatialReference: {
+                // autocasts as new SpatialReference()
+                wkid: 3857
+            },
+            startTime: 0
+        });
+
+
+        srcSearchWidget.on("search-start", function (event) {
+            mapView.graphics.remove(srcGraphic);
+        });
+        srcSearchWidget.on("search-clear", function (event) {
+            mapView.graphics.remove(srcGraphic);
+        });
+        srcSearchWidget.on("search-complete", function (event) {
+            if (event.numResults > 0) {
+                srcGraphic = event.results[0].results[0].feature;
+                srcGraphic.symbol = srcMarkerSymbol;
+                mapView.graphics.add(srcGraphic);
+                route();
+            }
+        });
+        srcSearchWidget.on("search-focus", function (event) {
+            srcDropPinActive = true;
+        });
+
+        dstSearchWidget.on("search-start", function (event) {
+            mapView.graphics.remove(dstGraphic);
+        });
+        dstSearchWidget.on("search-clear", function (event) {
+            mapView.graphics.remove(dstGraphic);
+        });
+        dstSearchWidget.on("search-complete", function (event) {
+            if (event.numResults > 0) {
+                dstGraphic = event.results[0].results[0].feature;
+                dstGraphic.symbol = dstMarkerSymbol;
+                mapView.graphics.add(dstGraphic);
+                route();
+            }
+        });
+        dstSearchWidget.on("search-focus", function (event) {
+            dstDropPinActive = true;
+        });
+
+
+        function route() {
+            routeLayer.graphics.removeAll();
+            if (srcGraphic && dstGraphic) {
+                routeParams.stops.features.pop();
+                routeParams.stops.features.pop();
+
+                routeParams.stops.features.push(srcGraphic);
+                routeParams.stops.features.push(dstGraphic);
+
+                routeParams.startTime = new Date('April 04, 2019 17:00:00');
+                routeTask.solve(routeParams).then(showRoute);
+            }
+        }
+
+        function addGraphic(pt) {
+            // var point = {
+            //     type: "point", // autocasts as new Point()
+            //     longitude: -79.4163,
+            //     latitude: 43.70011
+            // };
+            // var pointGraphic = new Graphic({
+            //     geometry: pt,
+            //     symbol: srcMarkerSymbol
+            // });
+            // mapView.graphics.add(pointGraphic);
+            //
+            if (srcDropPinActive || dstDropPinActive) {
+
+                var searchWidget = srcDropPinActive ? srcSearchWidget : dstSearchWidget;
+                mapView.graphics.remove(srcDropPinActive ? srcGraphic : dstGraphic);
+
+                //routeLayer.graphics.removeAll();
+
+
+                locatorTask
+                    .locationToAddress(pt)
+                    .then(function (response) {
+                        // If an address is successfully found, show it in the popup's content
+                        //console.log(response.address);
+                        searchWidget.searchTerm = response.address;
+                    })
+                    .catch(function (error) {
+                        // If the promise fails and no result is found, show a generic message
+                        console.log("No address was found for this location");
+                    });
+
+                if (srcDropPinActive) {
+                    srcGraphic = new Graphic({
+                        geometry: pt,
+                        symbol: srcMarkerSymbol
+                    });
+                    mapView.graphics.add(srcGraphic);
+                    srcDropPinActive = false;
+                } else {
+                    dstGraphic = new Graphic({
+                        geometry: pt,
+                        symbol: dstMarkerSymbol
+                    });
+                    mapView.graphics.add(dstGraphic);
+                    dstDropPinActive = false;
+                }
+            }
+
+            route();
+
+        }
+
+        // Adds the solved route to the map as a graphic
+        function showRoute(data) {
+            var routeResult = data.routeResults[0].route;
+            routeResult.symbol = routeSymbol;
+            routeLayer.add(routeResult);
+        }
+
+
+        var originSearchWidget = new Search({
+            container: "originContainer",
+            view: mapView,
+            locationEnabled: false,
+            autoSelect: false,
+            placeholder: "Choose origin point, or click on the map"
+        });
+        var serviceAreaTask = new ServiceAreaTask({
+            url: "https://utility.arcgis.com/usrsvcs/appservices/tbM4mfm4indqaBya/rest/services/World/ServiceAreas/NAServer/ServiceArea_World/solveServiceArea"
+        });
+        // Setup the service area parameters
+        var serviceAreaParams = new ServiceAreaParameters({
+            defaultBreaks: [15],
+            outSpatialReference: map.spatialReference,
+            returnFacilities: false,
+            facilities: new FeatureSet(),
+            timeOfDay: new Date()
+        });
+
+        function computeServiceArea(pt) {
+            mapView.graphics.removeAll();
+            routeLayer.graphics.removeAll();
+            var originMarkerSymbol = {
+                type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+                style: "diamond",
+                color: "blue",
+                size: "8px",  // pixels
+                outline: {  // autocasts as new SimpleLineSymbol()
+                    color: [255, 255, 0],
+                    width: 3  // points
+                }
+            };
+
+            var originGraphic = new Graphic({
+                geometry: pt,
+                symbol: originMarkerSymbol
+            });
+            mapView.graphics.add(originGraphic);
+
+            //console.log(parseInt(query("#selectTravelTime").attr('value')[0]));
+            serviceAreaParams.defaultBreaks = [parseInt(query("#selectTravelTime").attr('value')[0])];
+            serviceAreaParams.timeOfDay = new Date();
+
+            serviceAreaParams.facilities.features.pop();
+            serviceAreaParams.facilities.features.push(originGraphic);
+            serviceAreaTask.solve(serviceAreaParams).then(showServiceArea);
+        }
+
+        function showServiceArea(solveResult) {
+            //console.log("showServiceArea");
+            //console.log(solveResult);
+            var polygonSymbol = {
+                type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+                color: [232, 104, 80, 0.25],
+                style: "solid",
+                outline: {  // autocasts as new SimpleLineSymbol()
+                    color: "white",
+                    width: 2
+                }
+            };
+            var sa = solveResult.serviceAreaPolygons[0];
+            sa.symbol = polygonSymbol;
+            routeLayer.add(sa);
+
+            // arrayUtils.forEach(solveResult.serviceAreaPolygons, function(sa){
+            //     console.log("result");
+            //     sa.symbol = polygonSymbol;
+            //     routeLayer.add(sa);
+            // });
+        }
+
+    });
+</script>
+
+</body>
+</html>
