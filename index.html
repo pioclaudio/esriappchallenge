@@ -100,14 +100,15 @@
             <div class="panel-body">
 
                 <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#home">Directions</a></li>
-                    <li><a data-toggle="tab" href="#menu1">Service Area</a></li>
+                    <li class="active"><a data-toggle="tab" href="#home">Routes</a></li>
+                    <li><a data-toggle="tab" href="#menu1">Service Areas</a></li>
                     <li><a data-toggle="tab" href="#menu2">Accessibility</a></li>
                 </ul>
                 <div class="tab-content">
 
                     <div id="home" class="tab-pane fade in active">
-                        <div class="calcite-form-title">Set Origin & Destination by typing an address or clicking the map.</div>
+                        <div class="calcite-form-title">Routes taken by modes of transportation can differ. Set the origin
+                            and the destination by first clicking the search text box, then typing an address or clicking a location on the map.</div>
                         <label for="SrcInput" class="col-xs-3">Origin</label>
                         <div class="col-xs-9">
                             <div id="SrcInput" class="calcite-form-search"></div>
@@ -116,6 +117,11 @@
                         <label for="DstInput" class="col-xs-3">Destination</label>
                         <div class="col-xs-9">
                             <div id="DstInput" class="calcite-form-search"></div>
+                        </div>
+                        <div>
+                            <br><br><br><br>
+                            Time difference of public transport(orange) and driving(white):
+                            <div id="timeDiffContainer">0 min</div>
                         </div>
 
 
@@ -127,7 +133,7 @@
 <!--                        <br>string value: <input id="val" value="value not changed" readonly="readonly" disabled="disabled" />-->
                     </div>
                     <div id="menu1" class="tab-pane fade">
-                        <div class="calcite-form-title">Set Origin and Travel Time</div>
+                        <div class="calcite-form-title">Service areas show which roads can be reached within a given travel time. Set the origin and travel time to visualize the coverage areas.</div>
                         <label for="originContainer" class="col-xs-3 control-label">Location</label>
                         <div class="col-xs-9">
                             <div id="originContainer" class="calcite-form-search"></div>
@@ -141,9 +147,16 @@
                                 <option value="60">60</option>
                             </select>
                         </div>
+                        <br><br><br><br>
+                        <p>Shaded regions are computed service areas for public transport(orange) and driving(white) in the current time.</p>
                     </div>
                     <div id="menu2" class="tab-pane fade">
-                        <div class="calcite-form-title">Set Destination</div>
+                        <div class="calcite-form-title">Set the destination by typing an address or clicking the map.
+                            The routes originating from each neighborhood will be computed for both driving and public transport modes.
+                            The visualization shows the travel time difference for each neighborhood.
+                            <br><br>Darker color means higher difference.
+                            <br><br><h6>*Warning: computation can take a long time</h6>
+                        </div>
                         <label for="neighborSearchContainer" class="col-xs-3 control-label">Location</label>
                         <div class="col-xs-9">
                             <div id="neighborSearchContainer" class="calcite-form-search"></div>
@@ -221,7 +234,8 @@
     ], function (Map, MapView, Home, Zoom, Search, ScaleBar, Attribution, Graphic, webMercatorUtils, Locator,
                  GraphicsLayer, RouteTask, RouteParameters, FeatureSet, ServiceAreaTask, ServiceAreaParameters, esriRequest,
                  FeatureLayer, projection, Collapse, Dropdown, Tab, CalciteMaps, CalciteMapArcGISSupport, TimeTextBox, query) {
-
+        //esri.widgets.Search.main.placeholder = "Type address, or click on the map";
+        //document.getElementById("searchWidget_input").placeholder = "Search Location";
         /******************************************************************
          *
          * Create the map, view and widgets
@@ -232,11 +246,11 @@
 
         var routeLayer = new GraphicsLayer();
         // Map
-        var samplePointsLayer = new FeatureLayer({
-            url: "https://services.arcgis.com/4TKcmj8FHh5Vtobt/arcgis/rest/services/Toronto_Neighborhood/FeatureServer/0?token=qIqNnGzb1_pJJtTBEKiD3jDjbruo81X8HFvrYC2EhZ55iizDpQkdwa8BJXEjWVMt4Z-C8fb_C1FWY_gP1vDczmJWnM7rlv31v257XVNTwiKjqT-1tIzzafldzKv-lUQAxIRdlGpO6dmtsR_UuwZuoCP43-TyZNhR7EoLOh3x7z2GnOW-7_nhdUUfN-it1i8biYGKx1TJzePefFdObKGIlc2bCkMCwwDv2lNvone7pAU46BD2AIBOnCz-JFic8AhX"
-        });
+        // var samplePointsLayer = new FeatureLayer({
+        //     url: "https://services.arcgis.com/4TKcmj8FHh5Vtobt/arcgis/rest/services/Toronto_Neighborhood/FeatureServer/0?token=qIqNnGzb1_pJJtTBEKiD3jDjbruo81X8HFvrYC2EhZ55iizDpQkdwa8BJXEjWVMt4Z-C8fb_C1FWY_gP1vDczmJWnM7rlv31v257XVNTwiKjqT-1tIzzafldzKv-lUQAxIRdlGpO6dmtsR_UuwZuoCP43-TyZNhR7EoLOh3x7z2GnOW-7_nhdUUfN-it1i8biYGKx1TJzePefFdObKGIlc2bCkMCwwDv2lNvone7pAU46BD2AIBOnCz-JFic8AhX"
+        // });
         var neighborhoodLayer = new FeatureLayer({
-            url: "https://services.arcgis.com/4TKcmj8FHh5Vtobt/arcgis/rest/services/Toronto_Neighborhood/FeatureServer/1?token=AQCRI6YYw9G1krHdjvxxP0zCEIQ3IhdYBLLD7-vXkKLouoHHggxTIvTk_2H0JElWW7HSAb2YzLMRmrwy2i5b00GgNb9f87DvIXjw9yJEHyDKKokDQDqMYeDx6xbR8JrCoP8Az8scJwDo8B7KkxaOvPdXPzfb9O97vJiQRjBMOBqMqRGciFa1zqOB7VCMJR-MbqPjXgTtCo7jj50TSUfogQ.."
+            url: "https://services.arcgis.com/4TKcmj8FHh5Vtobt/arcgis/rest/services/Vancouver/FeatureServer/0?token=3Dr9irqog4DQEVktNkSqZAD29MRUuIUj9Xb0ua9_SGGRaFm_KPXbW879n9CYurh7UE_P4V2trOvLHvFs6pKSLdyi30OLF-mnXeABH6r81EV4CYkXQdClK1iDF0i18dRoLiaZpWSZ1Ohak1HRLP8bKll0kWzvwUnGmH5tNR_zJDsHAHrLYl8lY_TVWBen6JdgGWlv9zsdY_7crEd4yfpUVQ.."
         });
         var map = new Map({
             basemap: "dark-gray-vector",
@@ -262,6 +276,8 @@
         var transitTimeArray = [];
         var drivingTimeArray = [];
         var diffTimeArray = [];
+        var transitTimeSingle = 0;
+        var drivingTimeSingle = [];
         // Popup and panel sync
         mapView.when(function () {
             CalciteMapArcGISSupport.setPopupPanelSync(mapView);
@@ -502,7 +518,7 @@
         }
 
         function computeSingleRouteTTAPI() {
-            console.log("computeSingleRouteTTAPI");
+            //console.log("computeSingleRouteTTAPI");
 
             routeTTAPIParam.body = JSON.stringify({
                 "locations": [
@@ -534,9 +550,9 @@
                     "properties": ["travel_time", "distance", "route"]
                 }]
             });
-            console.log(routeTTAPIParam.body);
+            //console.log(routeTTAPIParam.body);
             esriRequest(routeTTAPI.url, routeTTAPIParam).then(function(response){
-                console.log(response.data);
+                //console.log(response.data);
                 //console.log(response.data.results[0].locations[0].properties[0].travel_time/60);
                 var path = [];
                 response.data.results[0].locations[0].properties[0].route.parts.forEach(function(part){
@@ -544,7 +560,7 @@
                         path.push([coord.lng, coord.lat]);
                     });
                 });
-                console.log(path);
+                //console.log(path);
                 var polyline = {
                     type: "polyline", // autocasts as new Polyline()
                     paths: path
@@ -561,11 +577,20 @@
                     symbol: lineSymbol
                 });
                 routeLayer.add(polylineGraphic);
+
+                transitTimeSingle = response.data.results[0].locations[0].properties[0].travel_time/60;
+                //console.log("transitTimeSingle"+transitTimeSingle);
+                updateDiffSingle();
             }); //request
 
         }
 
-
+        function updateDiffSingle(){
+            //console.log("diff"+Math.abs(transitTimeSingle-drivingTimeSingle));
+            //console.log(query("#timeDiffContainer").text );
+            //query("#timeDiffContainer").innerHTML = Math.abs(transitTimeSingle-drivingTimeSingle)+" min";
+            dojo.byId("timeDiffContainer").innerHTML = Math.round(Math.abs(transitTimeSingle-drivingTimeSingle))+" min";
+        }
 
         function addGraphic(pt) {
             // var point = {
@@ -622,7 +647,9 @@
             var routeResult = data.routeResults[0].route;
             routeResult.symbol = routeSymbol;
             routeLayer.add(routeResult);
-
+            drivingTimeSingle = data.routeResults[0].directions.totalTime;
+            //console.log(drivingTimeSingle);
+            updateDiffSingle();
         }
 
 
@@ -684,23 +711,13 @@
             mapView.graphics.removeAll();
         });
         originSearchWidget.on("search-complete", function (event) {
-            //mapView.graphics.removeAll();
-            //routeLayer.graphics.removeAll();
             if (event.numResults > 0) {
-                // var originGraphic = event.results[0].results[0].feature;
-                // originGraphic.symbol = srcMarkerSymbol;
-                // mapView.graphics.add(originGraphic);
-                // serviceAreaParams.defaultBreaks = [parseInt(query("#selectTravelTime").attr('value')[0])];
-                // serviceAreaParams.timeOfDay = new Date();
-                // serviceAreaParams.facilities.features.pop();
-                // serviceAreaParams.facilities.features.push(originGraphic);
-                // serviceAreaTask.solve(serviceAreaParams).then(showServiceArea);
                 computeServiceArea(event.results[0].results[0].feature.geometry);
             }
         });
-        originSearchWidget.on("search-focus", function (event) {
-            srcDropPinActive = true;
-        });
+        // originSearchWidget.on("search-focus", function (event) {
+        //     srcDropPinActive = true;
+        // });
 
 
 
@@ -745,7 +762,8 @@
                     };
                     var fillSymbol = {
                         type: "simple-fill", // autocasts as new SimpleFillSymbol()
-                        color: [227, 139, 79, 0.8],
+                        //color: [227, 139, 79, 0.8],
+                        color: [226, 119, 40, 0.9],
                         outline: {
                             // autocasts as new SimpleLineSymbol()
                             color: [255, 255, 255],
@@ -797,7 +815,8 @@
         function showServiceArea(solveResult) {
             var polygonSymbol = {
                 type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-                color: [232, 104, 80, 0.25],
+                //color: [232, 104, 80, 0.25],
+                color: [255, 255, 255, 0.2],
                 style: "solid",
                 outline: {  // autocasts as new SimpleLineSymbol()
                     color: "white",
@@ -824,6 +843,17 @@
         });
 
 
+        neighborSearchWidget.on("search-start", function (event) {
+            mapView.graphics.removeAll();
+        });
+        neighborSearchWidget.on("search-clear", function (event) {
+            mapView.graphics.removeAll();
+        });
+        neighborSearchWidget.on("search-complete", function (event) {
+            if (event.numResults > 0) {
+                diffODMatrix(event.results[0].results[0].feature.geometry);
+            }
+        });
 
 
         function computeRouteTTAPI(pt) {
@@ -940,9 +970,9 @@
             mapView.graphics.removeAll();
             routeLayer.graphics.removeAll();
 
-            transitTimeArray = new Array(polyCentroids.length).fill(1000);
-            drivingTimeArray = new Array(polyCentroids.length).fill(1000);
-            diffTimeArray = new Array(polyCentroids.length).fill(1000);
+            transitTimeArray = new Array(polyCentroids.length).fill(120);
+            drivingTimeArray = new Array(polyCentroids.length).fill(120);
+            diffTimeArray = new Array(polyCentroids.length).fill(120);
 
             var mp = webMercatorUtils.webMercatorToGeographic(pt);
             var outSpatialReference = {
@@ -968,6 +998,8 @@
 
 
                 projectedPoints.forEach(function(poly, i) {
+                    console.log(poly.latitude);
+                    console.log(mp.latitude);
                     routeTTAPIParam.body = JSON.stringify({
                         "locations": [
                             {
@@ -995,10 +1027,10 @@
                                 "type": "public_transport"
                             },
                             "departure_time": (new Date()).toISOString(),
-                            "properties": ["travel_time", "distance", "computeRoute"]
+                            "properties": ["travel_time", "distance", "route"]
                         }]
                     });
-                    //console.log(routeTTAPIParam);
+                    console.log(routeTTAPIParam);
                     esriRequest(routeTTAPI.url, routeTTAPIParam).then(function(response){
                         // The requested data
                         //console.log(response.data);
@@ -1032,12 +1064,16 @@
             }); //load
         }
 
+        //var colorPalette = ["#ffffff","#fee0d2","#fc9272","#de2d26"]
+        var colorPalette = [[222,45,38,0.6],[252,146,114,0.6],[254,224,210,0.6],[255, 255, 255, 0.6]];
         function updateDiff(i) {
-            //console.log(diffTimeArray);
+            //console.log(transitTimeArray[i]);
+            //console.log(drivingTimeArray[i]);
             //for (i=0; i<diffTimeArray.length; i++) {
                 diffTimeArray[i] = Math.abs(transitTimeArray[i] - drivingTimeArray[i]);
             //}
-            //console.log(diffTimeArray);
+            console.log(diffTimeArray[i]);
+            console.log(diffTimeArray[i]/40);
             neighborhoodLayer.queryFeatures().then(function(results){
                 // prints an array of all the features in the service to the console
                 //console.log(results.features);
@@ -1046,7 +1082,8 @@
                     //return feature.geometry;
                     var fillSymbol = {
                         type: "simple-fill", // autocasts as new SimpleFillSymbol()
-                        color: [255, 255, (diffTimeArray[i]/120.0)*255.0, 0.6],
+                        //color: [255, 255, (diffTimeArray[i]/120.0)*255.0, 0.6],
+                        color: colorPalette[Math.round(diffTimeArray[i]/40)]
                     };
                     //feature.symbol = fillSymbol;
 
