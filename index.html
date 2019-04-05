@@ -54,9 +54,9 @@
     </div>
     <!-- Title -->
     <div class="calcite-title calcite-overflow-hidden">
-        <span class="calcite-title-main">Transportation Justice</span>
+        <span class="calcite-title-main">STAT</span>
         <span class="calcite-title-divider hidden-xs"></span>
-        <span class="calcite-title-sub hidden-xs">text text text</span>
+        <span class="calcite-title-sub hidden-xs">Sustainability Through Accessible Transportation</span>
     </div>
     <!-- Nav -->
     <ul class="nav navbar-nav calcite-nav">
@@ -90,12 +90,11 @@
                 <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseInfo" aria-expanded="true"
                    aria-controls="collapseInfo"><span class="glyphicon glyphicon-info-sign"
                                                       aria-hidden="true"></span><span
-                        class="panel-label">Settings</span></a>
+                        class="panel-label"></span></a>
                 <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelInfo"><span
                         class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
             </div>
         </div>
-
 
         <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
             <div class="panel-body">
@@ -103,12 +102,12 @@
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#home">Directions</a></li>
                     <li><a data-toggle="tab" href="#menu1">Service Area</a></li>
-                    <li><a data-toggle="tab" href="#menu2">Neighborhood</a></li>
+                    <li><a data-toggle="tab" href="#menu2">Accessibility</a></li>
                 </ul>
                 <div class="tab-content">
 
                     <div id="home" class="tab-pane fade in active">
-                        <div class="calcite-form-title">Set Origin & Destination</div>
+                        <div class="calcite-form-title">Set Origin & Destination by typing an address or clicking the map.</div>
                         <label for="SrcInput" class="col-xs-3">Origin</label>
                         <div class="col-xs-9">
                             <div id="SrcInput" class="calcite-form-search"></div>
@@ -120,6 +119,12 @@
                         </div>
 
 
+<!--                        <label for="time1">Drop down Time box:</label>-->
+<!--                        <input class="dropdown calcite-dropdown" type="text" name="date1" id="time1" value="T15:00:00"-->
+<!--                               data-dojo-type="dijit/form/TimeTextBox"-->
+<!--                               onChange="require(['dojo/dom'], function(dom){dom.byId('val').value=dom.byId('time1').value.toString().replace(/.*1970\s(\S+).*/,'T$1')})"-->
+<!--                               required="true" />-->
+<!--                        <br>string value: <input id="val" value="value not changed" readonly="readonly" disabled="disabled" />-->
                     </div>
                     <div id="menu1" class="tab-pane fade">
                         <div class="calcite-form-title">Set Origin and Travel Time</div>
@@ -145,7 +150,6 @@
                         </div>
                     </div>
                 </div>
-
 
             </div><!-- /.panel-body -->
         </div><!-- /.panel-collapse -->
@@ -236,15 +240,16 @@
         });
         var map = new Map({
             basemap: "dark-gray-vector",
-            layers: [routeLayer, neighborhoodLayer] // Add the route layer to the map
+            layers: [routeLayer, neighborhoodLayer] // Add the computeRoute layer to the map
         });
 
         // View
         var mapView = new MapView({
             container: "mapViewDiv",
             map: map,
-            zoom: 10, // Sets zoom level based on level of detail (LOD)
-            center: [-79.4163, 43.70011], // Sets center point of view using longitude,latitude
+            zoom: 12, // Sets zoom level based on level of detail (LOD)
+            //center: [-79.4163, 43.70011], // Sets center point of view using longitude,latitude
+            center: [-123.116226, 49.246292],
             padding: {
                 top: 50,
                 bottom: 0
@@ -260,8 +265,6 @@
         // Popup and panel sync
         mapView.when(function () {
             CalciteMapArcGISSupport.setPopupPanelSync(mapView);
-            //console.log("loaded");
-            //console.log(query('a[data-toggle="tab"]'));
             query('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 tabMode = query('a[data-toggle="tab"]').indexOf(this);
                 mapView.graphics.removeAll();
@@ -276,13 +279,10 @@
                 polyCentroids = results.features.map(function(feature) {
                     //return feature.geometry;
                     return feature.geometry.centroid;
-
                 });
-                //console.log(polyCentroids);
             });
         });
 
-        // Search - add to navbar
         var srcSearchWidget = new Search({
             container: "SrcInput",
             view: mapView,
@@ -296,17 +296,16 @@
             locationEnabled: false,
             autoSelect: false
         });
-        //CalciteMapArcGISSupport.setSearchExpandEvents(searchWidget);
 
-        var timeText = new TimeTextBox({
-            name: "progval", value: new Date(),
-            constraints: {
-                timePattern: 'HH:mm:ss',
-                clickableIncrement: 'T00:15:00',
-                visibleIncrement: 'T00:15:00',
-                visibleRange: 'T01:00:00'
-            }
-        }, "progval").startup();
+        // var timeText = new TimeTextBox({
+        //     name: "progval", value: new Date(),
+        //     constraints: {
+        //         timePattern: 'HH:mm:ss',
+        //         clickableIncrement: 'T00:15:00',
+        //         visibleIncrement: 'T00:15:00',
+        //         visibleRange: 'T01:00:00'
+        //     }
+        // }, "progval").startup();
 
 
         // Map widgets
@@ -330,12 +329,6 @@
             view: mapView
         });
         mapView.ui.add(attribution, "manual");
-
-        // // Panel widgets - add legend
-        // var legendWidget = new Legend({
-        //     container: "legendDiv",
-        //     view: mapView
-        // });
 
         var srcGraphic, dstGraphic;
         var srcDropPinActive = false;
@@ -397,7 +390,7 @@
             url:
                 "https://utility.arcgis.com/usrsvcs/appservices/skHSU1JsOEZauhMu/rest/services/World/Route/NAServer/Route_World/solve"
         });
-        // Setup the route parameters
+        // Setup the computeRoute parameters
         var routeParams = new RouteParameters({
             stops: new FeatureSet(),
             outSpatialReference: {
@@ -408,298 +401,7 @@
             returnDirections: true
         });
 
-
-        srcSearchWidget.on("search-start", function (event) {
-            mapView.graphics.remove(srcGraphic);
-        });
-        srcSearchWidget.on("search-clear", function (event) {
-            mapView.graphics.remove(srcGraphic);
-        });
-        srcSearchWidget.on("search-complete", function (event) {
-            if (event.numResults > 0) {
-                srcGraphic = event.results[0].results[0].feature;
-                srcGraphic.symbol = srcMarkerSymbol;
-                mapView.graphics.add(srcGraphic);
-                route();
-            }
-        });
-        srcSearchWidget.on("search-focus", function (event) {
-            srcDropPinActive = true;
-        });
-
-        dstSearchWidget.on("search-start", function (event) {
-            mapView.graphics.remove(dstGraphic);
-        });
-        dstSearchWidget.on("search-clear", function (event) {
-            mapView.graphics.remove(dstGraphic);
-        });
-        dstSearchWidget.on("search-complete", function (event) {
-            if (event.numResults > 0) {
-                dstGraphic = event.results[0].results[0].feature;
-                dstGraphic.symbol = dstMarkerSymbol;
-                mapView.graphics.add(dstGraphic);
-                route();
-            }
-        });
-        dstSearchWidget.on("search-focus", function (event) {
-            dstDropPinActive = true;
-        });
-
-
-        function route() {
-            routeLayer.graphics.removeAll();
-            if (srcGraphic && dstGraphic) {
-                routeParams.stops.features.pop();
-                routeParams.stops.features.pop();
-                routeParams.stops.features.push(srcGraphic);
-                routeParams.stops.features.push(dstGraphic);
-
-                routeParams.startTime = new Date();
-                routeTask.solve(routeParams).then(showRoute);
-            }
-        }
-
-        function addGraphic(pt) {
-            // var point = {
-            //     type: "point", // autocasts as new Point()
-            //     longitude: -79.4163,
-            //     latitude: 43.70011
-            // };
-            // var pointGraphic = new Graphic({
-            //     geometry: pt,
-            //     symbol: srcMarkerSymbol
-            // });
-            // mapView.graphics.add(pointGraphic);
-            //
-            if (srcDropPinActive || dstDropPinActive) {
-
-                var searchWidget = srcDropPinActive ? srcSearchWidget : dstSearchWidget;
-                mapView.graphics.remove(srcDropPinActive ? srcGraphic : dstGraphic);
-
-                //routeLayer.graphics.removeAll();
-
-
-                locatorTask
-                    .locationToAddress(pt)
-                    .then(function (response) {
-                        // If an address is successfully found, show it in the popup's content
-                        //console.log(response.address);
-                        searchWidget.searchTerm = response.address;
-                    })
-                    .catch(function (error) {
-                        // If the promise fails and no result is found, show a generic message
-                        console.log("No address was found for this location");
-                    });
-
-                if (srcDropPinActive) {
-                    srcGraphic = new Graphic({
-                        geometry: pt,
-                        symbol: srcMarkerSymbol
-                    });
-                    mapView.graphics.add(srcGraphic);
-                    srcDropPinActive = false;
-                } else {
-                    dstGraphic = new Graphic({
-                        geometry: pt,
-                        symbol: dstMarkerSymbol
-                    });
-                    mapView.graphics.add(dstGraphic);
-                    dstDropPinActive = false;
-                }
-            }
-
-            route();
-
-        }
-
-        // Adds the solved route to the map as a graphic
-        function showRoute(data) {
-            var routeResult = data.routeResults[0].route;
-            routeResult.symbol = routeSymbol;
-            routeLayer.add(routeResult);
-
-        }
-
-
-        var originSearchWidget = new Search({
-            container: "originContainer",
-            view: mapView,
-            locationEnabled: false,
-            autoSelect: false,
-            placeholder: "Choose origin point, or click on the map"
-        });
-        var serviceAreaTask = new ServiceAreaTask({
-            url: "https://utility.arcgis.com/usrsvcs/appservices/tbM4mfm4indqaBya/rest/services/World/ServiceAreas/NAServer/ServiceArea_World/solveServiceArea"
-        });
-        // Setup the service area parameters
-        var serviceAreaParams = new ServiceAreaParameters({
-            defaultBreaks: [15],
-            outSpatialReference: map.spatialReference,
-            returnFacilities: false,
-            facilities: new FeatureSet(),
-            timeOfDay: new Date()
-        });
-
-        var serviceAreaTTAPI = {
-            url: "https://api.traveltimeapp.com/v4/time-map",
-        };
-        var serviceAreaTTAPIParam = {
-            headers : {
-                "Host": "api.traveltimeapp.com",
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-Application-Id": "118cbc38",
-                "X-Api-Key": "2e338f2d5171f25ed1a497f5eab24ec2"
-            },
-            method: "post",
-            responseType: "json",
-            body : JSON.stringify({
-                "departure_searches": [
-                    {
-                        "id": "origin",
-                        "coords": {
-                            "lat": 51.507609,
-                            "lng": -0.128315
-                        },
-                        "transportation": {
-                            "type": "public_transport"
-                        },
-                        "departure_time": "2019-04-05T012:00:00Z",
-                        "travel_time": 900
-                    }
-                ]
-            })
-        };
-
-
-
-        function timetravel(pt) {
-            serviceAreaTTAPIParam.body = JSON.stringify({
-                "departure_searches": [
-                    {
-                        "id": "origin",
-                        "coords": {
-                            "lat": pt.y,
-                            "lng": pt.x
-                        },
-                        "transportation": {
-                            "type": "public_transport"
-                            //"walking_time":0
-                        },
-                        "departure_time": (new Date()).toISOString(),
-                        "travel_time": parseInt(query("#selectTravelTime").attr('value')[0])*60
-                        // "range": {
-                        //     "enabled": true,
-                        //     "width": 3600
-                        // }
-                    }
-                ]})
-            console.log(serviceAreaTTAPIParam.body);
-            esriRequest(serviceAreaTTAPI.url, serviceAreaTTAPIParam).then(function(response){
-                // The requested data
-                console.log(response.data);
-               // console.log(response.data.results[0].shapes[0].shell);
-
-                response.data.results[0].shapes.forEach(function(shape) {
-                    var ring = [];
-                    shape.shell.forEach(function (element) {
-                        //console.log(element);
-                        ring.push([element.lng, element.lat]);
-                    });
-
-                    var polygon = {
-                        type: "polygon", // autocasts as new Polygon()
-                        rings: ring
-                    };
-                    var fillSymbol = {
-                        type: "simple-fill", // autocasts as new SimpleFillSymbol()
-                        color: [227, 139, 79, 0.8],
-                        outline: {
-                            // autocasts as new SimpleLineSymbol()
-                            color: [255, 255, 255],
-                            width: 1
-                        }
-                    };
-
-                    // Add the geometry and symbol to a new graphic
-                    var polygonGraphic = new Graphic({
-                        geometry: polygon,
-                        symbol: fillSymbol
-                    });
-                    routeLayer.add(polygonGraphic);
-                });
-            });
-        }
-
-        function computeServiceArea(pt) {
-            //console.log(pt);
-            var mp = webMercatorUtils.webMercatorToGeographic(pt);
-            //console.log(mp);
-            timetravel(mp);
-
-            mapView.graphics.removeAll();
-            routeLayer.graphics.removeAll();
-            var originMarkerSymbol = {
-                type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
-                style: "diamond",
-                color: "blue",
-                size: "8px",  // pixels
-                outline: {  // autocasts as new SimpleLineSymbol()
-                    color: [255, 255, 0],
-                    width: 3  // points
-                }
-            };
-
-            var originGraphic = new Graphic({
-                geometry: pt,
-                symbol: originMarkerSymbol
-            });
-            mapView.graphics.add(originGraphic);
-
-            //console.log(parseInt(query("#selectTravelTime").attr('value')[0]));
-            serviceAreaParams.defaultBreaks = [parseInt(query("#selectTravelTime").attr('value')[0])];
-            serviceAreaParams.timeOfDay = new Date();
-
-            serviceAreaParams.facilities.features.pop();
-            serviceAreaParams.facilities.features.push(originGraphic);
-            serviceAreaTask.solve(serviceAreaParams).then(showServiceArea);
-        }
-
-        function showServiceArea(solveResult) {
-            //console.log("showServiceArea");
-            //console.log(solveResult);
-            var polygonSymbol = {
-                type: "simple-fill",  // autocasts as new SimpleFillSymbol()
-                color: [232, 104, 80, 0.25],
-                style: "solid",
-                outline: {  // autocasts as new SimpleLineSymbol()
-                    color: "white",
-                    width: 2
-                }
-            };
-            var sa = solveResult.serviceAreaPolygons[0];
-            sa.symbol = polygonSymbol;
-            routeLayer.add(sa);
-
-            // arrayUtils.forEach(solveResult.serviceAreaPolygons, function(sa){
-            //     console.log("result");
-            //     sa.symbol = polygonSymbol;
-            //     routeLayer.add(sa);
-            // });
-        }
-
-        var neighborSearchWidget = new Search({
-            container: "neighborSearchContainer",
-            view: mapView,
-            locationEnabled: false,
-            autoSelect: false,
-            placeholder: "Choose origin point, or click on the map"
-        });
-
-        // var routeREST = {
-        //     url: "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve",
-        // };
-        var routeTTimeAPI = {
+        var routeTTAPI = {
             url: "https://api.traveltimeapp.com/v4/routes",
         };
         var routeTTAPIParam = {
@@ -740,11 +442,388 @@
                             "type": "public_transport"
                         },
                         "departure_time": (new Date()).toISOString(),
-                        "properties": ["travel_time"]
+                        "properties": ["travel_time", "distance", "route"]
                     }
                 ]
             })
         };
+
+        srcSearchWidget.on("search-start", function (event) {
+            mapView.graphics.remove(srcGraphic);
+        });
+        srcSearchWidget.on("search-clear", function (event) {
+            mapView.graphics.remove(srcGraphic);
+        });
+        srcSearchWidget.on("search-complete", function (event) {
+            if (event.numResults > 0) {
+                srcGraphic = event.results[0].results[0].feature;
+                srcGraphic.symbol = srcMarkerSymbol;
+                mapView.graphics.add(srcGraphic);
+                computeRoute();
+            }
+        });
+        srcSearchWidget.on("search-focus", function (event) {
+            srcDropPinActive = true;
+        });
+
+        dstSearchWidget.on("search-start", function (event) {
+            mapView.graphics.remove(dstGraphic);
+        });
+        dstSearchWidget.on("search-clear", function (event) {
+            mapView.graphics.remove(dstGraphic);
+        });
+        dstSearchWidget.on("search-complete", function (event) {
+            if (event.numResults > 0) {
+                dstGraphic = event.results[0].results[0].feature;
+                dstGraphic.symbol = dstMarkerSymbol;
+                mapView.graphics.add(dstGraphic);
+                computeRoute();
+            }
+        });
+        dstSearchWidget.on("search-focus", function (event) {
+            dstDropPinActive = true;
+        });
+
+
+        function computeRoute() {
+            routeLayer.graphics.removeAll();
+            if (srcGraphic && dstGraphic) {
+                routeParams.stops.features.pop();
+                routeParams.stops.features.pop();
+                routeParams.stops.features.push(srcGraphic);
+                routeParams.stops.features.push(dstGraphic);
+
+
+                computeSingleRouteTTAPI();
+                routeParams.startTime = new Date();
+                routeTask.solve(routeParams).then(showRoute);
+
+            }
+        }
+
+        function computeSingleRouteTTAPI() {
+            console.log("computeSingleRouteTTAPI");
+
+            routeTTAPIParam.body = JSON.stringify({
+                "locations": [
+                    {
+                        "id": "src",
+                        "coords": {
+                            "lat": srcGraphic.geometry.latitude,
+                            "lng": srcGraphic.geometry.longitude
+                        }
+                    },
+                    {
+                        "id": "dst",
+                        "coords": {
+                            "lat": dstGraphic.geometry.latitude,
+                            "lng": dstGraphic.geometry.longitude
+                        }
+                    },
+                ],
+                "departure_searches": [{
+                    "id": "departure search example",
+                    "departure_location_id": "src",
+                    "arrival_location_ids": [
+                        "dst"
+                    ],
+                    "transportation": {
+                        "type": "public_transport"
+                    },
+                    "departure_time": (new Date()).toISOString(),
+                    "properties": ["travel_time", "distance", "route"]
+                }]
+            });
+            console.log(routeTTAPIParam.body);
+            esriRequest(routeTTAPI.url, routeTTAPIParam).then(function(response){
+                console.log(response.data);
+                //console.log(response.data.results[0].locations[0].properties[0].travel_time/60);
+                var path = [];
+                response.data.results[0].locations[0].properties[0].route.parts.forEach(function(part){
+                    part.coords.forEach(function(coord){
+                        path.push([coord.lng, coord.lat]);
+                    });
+                });
+                console.log(path);
+                var polyline = {
+                    type: "polyline", // autocasts as new Polyline()
+                    paths: path
+                };
+
+                // Create a symbol for drawing the line
+                var lineSymbol = {
+                    type: "simple-line", // autocasts as SimpleLineSymbol()
+                    color: [226, 119, 40],
+                    width: 4
+                };
+                var polylineGraphic = new Graphic({
+                    geometry: polyline,
+                    symbol: lineSymbol
+                });
+                routeLayer.add(polylineGraphic);
+            }); //request
+
+        }
+
+
+
+        function addGraphic(pt) {
+            // var point = {
+            //     type: "point", // autocasts as new Point()
+            //     longitude: -79.4163,
+            //     latitude: 43.70011
+            // };
+            // var pointGraphic = new Graphic({
+            //     geometry: pt,
+            //     symbol: srcMarkerSymbol
+            // });
+            // mapView.graphics.add(pointGraphic);
+            //
+            if (srcDropPinActive || dstDropPinActive) {
+                var searchWidget = srcDropPinActive ? srcSearchWidget : dstSearchWidget;
+                mapView.graphics.remove(srcDropPinActive ? srcGraphic : dstGraphic);
+                //routeLayer.graphics.removeAll();
+
+                locatorTask
+                    .locationToAddress(pt)
+                    .then(function (response) {
+                        // If an address is successfully found, show it in the popup's content
+                        //console.log(response.address);
+                        searchWidget.searchTerm = response.address;
+                    })
+                    .catch(function (error) {
+                        // If the promise fails and no result is found, show a generic message
+                        console.log("No address was found for this location");
+                    });
+
+                if (srcDropPinActive) {
+                    srcGraphic = new Graphic({
+                        geometry: pt,
+                        symbol: srcMarkerSymbol
+                    });
+                    mapView.graphics.add(srcGraphic);
+                    srcDropPinActive = false;
+                } else {
+                    dstGraphic = new Graphic({
+                        geometry: pt,
+                        symbol: dstMarkerSymbol
+                    });
+                    mapView.graphics.add(dstGraphic);
+                    dstDropPinActive = false;
+                }
+            }
+
+            computeRoute();
+
+        }
+
+        // Adds the solved computeRoute to the map as a graphic
+        function showRoute(data) {
+            var routeResult = data.routeResults[0].route;
+            routeResult.symbol = routeSymbol;
+            routeLayer.add(routeResult);
+
+        }
+
+
+        var originSearchWidget = new Search({
+            container: "originContainer",
+            view: mapView,
+            locationEnabled: false,
+            autoSelect: false,
+            placeholder: "Choose origin point, or click on the map"
+        });
+        var serviceAreaTask = new ServiceAreaTask({
+            url: "https://utility.arcgis.com/usrsvcs/appservices/tbM4mfm4indqaBya/rest/services/World/ServiceAreas/NAServer/ServiceArea_World/solveServiceArea"
+        });
+        // Setup the service area parameters
+        var serviceAreaParams = new ServiceAreaParameters({
+            defaultBreaks: [15],
+            outSpatialReference: map.spatialReference,
+            returnFacilities: false,
+            facilities: new FeatureSet(),
+            timeOfDay: new Date()
+        });
+        var serviceAreaTTAPI = {
+            url: "https://api.traveltimeapp.com/v4/time-map",
+        };
+        var serviceAreaTTAPIParam = {
+            headers : {
+                "Host": "api.traveltimeapp.com",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-Application-Id": "118cbc38",
+                "X-Api-Key": "2e338f2d5171f25ed1a497f5eab24ec2"
+            },
+            method: "post",
+            responseType: "json",
+            body : JSON.stringify({
+                "departure_searches": [
+                    {
+                        "id": "origin",
+                        "coords": {
+                            "lat": 51.507609,
+                            "lng": -0.128315
+                        },
+                        "transportation": {
+                            "type": "public_transport"
+                        },
+                        "departure_time": "2019-04-05T012:00:00Z",
+                        "travel_time": 900
+                    }
+                ]
+            })
+        };
+
+
+
+        originSearchWidget.on("search-start", function (event) {
+            mapView.graphics.removeAll();
+        });
+        originSearchWidget.on("search-clear", function (event) {
+            mapView.graphics.removeAll();
+        });
+        originSearchWidget.on("search-complete", function (event) {
+            //mapView.graphics.removeAll();
+            //routeLayer.graphics.removeAll();
+            if (event.numResults > 0) {
+                // var originGraphic = event.results[0].results[0].feature;
+                // originGraphic.symbol = srcMarkerSymbol;
+                // mapView.graphics.add(originGraphic);
+                // serviceAreaParams.defaultBreaks = [parseInt(query("#selectTravelTime").attr('value')[0])];
+                // serviceAreaParams.timeOfDay = new Date();
+                // serviceAreaParams.facilities.features.pop();
+                // serviceAreaParams.facilities.features.push(originGraphic);
+                // serviceAreaTask.solve(serviceAreaParams).then(showServiceArea);
+                computeServiceArea(event.results[0].results[0].feature.geometry);
+            }
+        });
+        originSearchWidget.on("search-focus", function (event) {
+            srcDropPinActive = true;
+        });
+
+
+
+
+        function computeServiceAreaTTAPI(pt) {
+            serviceAreaTTAPIParam.body = JSON.stringify({
+                "departure_searches": [
+                    {
+                        "id": "origin",
+                        "coords": {
+                            "lat": pt.y,
+                            "lng": pt.x
+                        },
+                        "transportation": {
+                            "type": "public_transport"
+                            //"walking_time":0
+                        },
+                        "departure_time": (new Date()).toISOString(),
+                        "travel_time": parseInt(query("#selectTravelTime").attr('value')[0])*60,
+                        // "range": {
+                        //     "enabled": true,
+                        //     "width": 3600
+                        // }
+                    }
+                ]})
+            //console.log(serviceAreaTTAPIParam.body);
+            esriRequest(serviceAreaTTAPI.url, serviceAreaTTAPIParam).then(function(response){
+                // The requested data
+                //console.log(response.data);
+               // console.log(response.data.results[0].shapes[0].shell);
+
+                response.data.results[0].shapes.forEach(function(shape) {
+                    var ring = [];
+                    shape.shell.forEach(function (element) {
+                        //console.log(element);
+                        ring.push([element.lng, element.lat]);
+                    });
+
+                    var polygon = {
+                        type: "polygon", // autocasts as new Polygon()
+                        rings: ring
+                    };
+                    var fillSymbol = {
+                        type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                        color: [227, 139, 79, 0.8],
+                        outline: {
+                            // autocasts as new SimpleLineSymbol()
+                            color: [255, 255, 255],
+                            width: 1
+                        }
+                    };
+
+                    // Add the geometry and symbol to a new graphic
+                    var polygonGraphic = new Graphic({
+                        geometry: polygon,
+                        symbol: fillSymbol
+                    });
+                    routeLayer.add(polygonGraphic);
+                });
+            });
+        }
+        function computeServiceArea(pt) {
+            var mp = webMercatorUtils.webMercatorToGeographic(pt);
+            computeServiceAreaTTAPI(mp);
+
+            mapView.graphics.removeAll();
+            routeLayer.graphics.removeAll();
+            // var originMarkerSymbol = {
+            //     type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+            //     style: "diamond",
+            //     color: "blue",
+            //     size: "8px",  // pixels
+            //     outline: {  // autocasts as new SimpleLineSymbol()
+            //         color: [255, 255, 0],
+            //         width: 3  // points
+            //     }
+            // };
+
+            var originGraphic = new Graphic({
+                geometry: pt,
+                symbol: srcMarkerSymbol
+            });
+            mapView.graphics.add(originGraphic);
+
+            //console.log(parseInt(query("#selectTravelTime").attr('value')[0]));
+            serviceAreaParams.defaultBreaks = [parseInt(query("#selectTravelTime").attr('value')[0])];
+            serviceAreaParams.timeOfDay = new Date();
+
+            serviceAreaParams.facilities.features.pop();
+            serviceAreaParams.facilities.features.push(originGraphic);
+            serviceAreaTask.solve(serviceAreaParams).then(showServiceArea);
+        }
+
+        function showServiceArea(solveResult) {
+            var polygonSymbol = {
+                type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+                color: [232, 104, 80, 0.25],
+                style: "solid",
+                outline: {  // autocasts as new SimpleLineSymbol()
+                    color: "white",
+                    width: 2
+                }
+            };
+            var sa = solveResult.serviceAreaPolygons[0];
+            sa.symbol = polygonSymbol;
+            routeLayer.add(sa);
+
+            // arrayUtils.forEach(solveResult.serviceAreaPolygons, function(sa){
+            //     console.log("result");
+            //     sa.symbol = polygonSymbol;
+            //     routeLayer.add(sa);
+            // });
+        }
+
+        var neighborSearchWidget = new Search({
+            container: "neighborSearchContainer",
+            view: mapView,
+            locationEnabled: false,
+            autoSelect: false,
+            placeholder: "Choose origin point, or click on the map"
+        });
+
+
 
 
         function computeRouteTTAPI(pt) {
@@ -785,16 +864,13 @@
                                 "dst"
                             ],
                             "transportation": {
-                                "type": "driving"
+                                "type": "public_transport"
                             },
                             "departure_time": (new Date()).toISOString(),
-                            "properties": ["travel_time", "distance", "route"]
+                            "properties": ["travel_time", "distance", "computeRoute"]
                         }]
                     });
-                    //console.log(routeTTAPIParam);
-                    esriRequest(routeTTimeAPI.url, routeTTAPIParam).then(function(response){
-                        // The requested data
-                        //console.log(response.data);
+                    esriRequest(routeTTAPI.url, routeTTAPIParam).then(function(response){
                         //console.log(response.data.results[0].locations[0].properties[0].travel_time/60);
 
                         transitTimeArray[i] = response.data.results[0].locations[0].properties[0].travel_time/60;
@@ -916,14 +992,14 @@
                                 "dst"
                             ],
                             "transportation": {
-                                "type": "driving"
+                                "type": "public_transport"
                             },
                             "departure_time": (new Date()).toISOString(),
-                            "properties": ["travel_time", "distance", "route"]
+                            "properties": ["travel_time", "distance", "computeRoute"]
                         }]
                     });
                     //console.log(routeTTAPIParam);
-                    esriRequest(routeTTimeAPI.url, routeTTAPIParam).then(function(response){
+                    esriRequest(routeTTAPI.url, routeTTAPIParam).then(function(response){
                         // The requested data
                         //console.log(response.data);
                         //console.log(response.data.results[0].locations[0].properties[0].travel_time/60);
@@ -960,7 +1036,6 @@
             //console.log(diffTimeArray);
             //for (i=0; i<diffTimeArray.length; i++) {
                 diffTimeArray[i] = Math.abs(transitTimeArray[i] - drivingTimeArray[i]);
-                //diffTimeArray[i] = Math.abs( drivingTimeArray[i]);
             //}
             //console.log(diffTimeArray);
             neighborhoodLayer.queryFeatures().then(function(results){
