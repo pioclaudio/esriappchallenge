@@ -132,12 +132,32 @@
                             </div>
 
 
-                            <!--<div class="form-group">
-                            <label for="progval" >Time box:</label>
-                            <input id="progval" data-dojo-type="dijit.form.DateTextBox" />
-                            </div>-->
+<!--                            <div class="form-group">-->
+<!--                            <label for="progval" >Time box:</label>-->
+<!--                            <input id="progval" data-dojo-type="dijit.form.DateTextBox" />-->
+<!--                            </div>-->
 
+                            <div class="calcite-form-title">Set the origin</div>
+                            <div class="form-horizontal calcite-form-padding">
+                                <div class="form-group">
+                                    <label for="originContainer" class="col-xs-3 control-label">Location</label>
+                                    <div class="col-xs-9">
+                                        <div id="originContainer" class="calcite-form-search"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="selectTravelTime" class="col-xs-3 control-label">Time</label>
+                                    <div class="col-xs-9">
+                                        <select id="selectTravelTime" class="form-control">
+                                            <option value="15">15</option>
+                                            <option value="30">30</option>
+                                            <option value="45">45</option>
+                                            <option value="60">60</option>
+                                        </select>
+                                    </div>
+                                </div>
 
+                            </div>
                         </div>
 
 
@@ -146,27 +166,7 @@
                     <!-- Tab - Map -->
 
                     <div role="tabpanel" class="tab-pane" id="map">
-                        <div class="calcite-form-title">Set the origin</div>
-                        <div class="form-horizontal calcite-form-padding">
-                            <div class="form-group">
-                                <label for="originContainer" class="col-xs-3 control-label">Location</label>
-                                <div class="col-xs-9">
-                                    <div id="originContainer" class="calcite-form-search"></div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="selectTravelTime" class="col-xs-3 control-label">Time</label>
-                                <div class="col-xs-9">
-                                    <select id="selectTravelTime" class="form-control">
-                                        <option value="15">15</option>
-                                        <option value="30">30</option>
-                                        <option value="45">45</option>
-                                        <option value="60">60</option>
-                                    </select>
-                                </div>
-                            </div>
 
-                        </div>
                     </div>
 
 
@@ -242,6 +242,7 @@
         "esri/tasks/support/FeatureSet",
         "esri/tasks/ServiceAreaTask",
         "esri/tasks/support/ServiceAreaParameters",
+        "esri/request",
 
         // Bootstrap
         "bootstrap/Collapse",
@@ -257,7 +258,8 @@
         "dojo/query",
         "dojo/domReady!"
     ], function (Map, MapView, Home, Zoom, Search, Legend, ScaleBar, Attribution, Graphic, webMercatorUtils, Locator,
-                 GraphicsLayer, RouteTask, RouteParameters, FeatureSet, ServiceAreaTask, ServiceAreaParameters, Collapse,
+                 GraphicsLayer, RouteTask, RouteParameters, FeatureSet, ServiceAreaTask, ServiceAreaParameters, esriRequest,
+                 Collapse,
                  Dropdown, CalciteMaps, CalciteMapArcGISSupport, TimeTextBox, query) {
 
         /******************************************************************
@@ -317,7 +319,7 @@
                 visibleIncrement: 'T00:15:00',
                 visibleRange: 'T01:00:00'
             }
-        }, "progval");
+        }, "progval").startup();
 
 
         // Map widgets
@@ -545,7 +547,115 @@
             timeOfDay: new Date()
         });
 
+        var serviceAreaTravelTime = {
+            url: "https://api.traveltimeapp.com/v4/time-map",
+
+        };
+        var serviceAreaTravelTimeParam = {
+            headers : {
+                "Host": "api.traveltimeapp.com",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-Application-Id": "118cbc38",
+                "X-Api-Key": "2e338f2d5171f25ed1a497f5eab24ec2"
+            },
+            method: "post",
+            responseType: "json",
+            body : JSON.stringify({
+                "departure_searches": [
+                    {
+                        "id": "public transport from Trafalgar Square",
+                        "coords": {
+                            "lat": 51.507609,
+                            "lng": -0.128315
+                        },
+                        "transportation": {
+                            "type": "public_transport"
+                        },
+                        "departure_time": "2019-04-04T08:00:00Z",
+                        "travel_time": 900
+                    }
+                ],
+                "arrival_searches": [
+                    {
+                        "id": "public transport to Trafalgar Square",
+                        "coords": {
+                            "lat": 51.507609,
+                            "lng": -0.128315
+                        },
+                        "transportation": {
+                            "type": "public_transport"
+                        },
+                        "arrival_time": "2019-04-04T08:00:00Z",
+                        "travel_time": 900,
+                        "range": {
+                            "enabled": true,
+                            "width": 3600
+                        }
+                    }
+                ]
+            })
+        };
+
+
+
+        function timetravel(pt) {
+            serviceAreaTravelTimeParam.body = JSON.stringify({
+                "departure_searches": [
+                    {
+                        "id": "query1",
+                        "coords": {
+                            "lat": pt.y,
+                            "lng": pt.x
+                        },
+                        "transportation": {
+                            "type": "public_transport"
+                        },
+                        "departure_time": (new Date()).toISOString(),
+                        "travel_time": parseInt(query("#selectTravelTime").attr('value')[0])*60
+                    }
+                ]})
+            esriRequest(serviceAreaTravelTime.url, serviceAreaTravelTimeParam).then(function(response){
+                // The requested data
+                console.log(response.data);
+                console.log(response.data.results[0].shapes[0].shell);
+
+                var ring = [];
+                response.data.results[0].shapes[0].shell.forEach(function(element) {
+                    console.log(element);
+                    ring.push([element.lng, element.lat]);
+                });
+
+                var polygon = {
+                    type: "polygon", // autocasts as new Polygon()
+                    rings: ring
+                };
+                var fillSymbol = {
+                    type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                    color: [227, 139, 79, 0.8],
+                    outline: {
+                        // autocasts as new SimpleLineSymbol()
+                        color: [255, 255, 255],
+                        width: 1
+                    }
+                };
+
+                // Add the geometry and symbol to a new graphic
+                var polygonGraphic = new Graphic({
+                    geometry: polygon,
+                    symbol: fillSymbol
+                });
+                routeLayer.add(polygonGraphic);
+
+            });
+        }
+
         function computeServiceArea(pt) {
+            //console.log(pt);
+            var mp = webMercatorUtils.webMercatorToGeographic(pt);
+            //console.log(mp);
+            timetravel(mp);
+
             mapView.graphics.removeAll();
             routeLayer.graphics.removeAll();
             var originMarkerSymbol = {
