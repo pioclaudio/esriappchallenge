@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="description" content="ArcGIS JS v4, Calcite Maps and Bootstrap Example">
+    <meta name="description" content="Esri App Challenge 2019">
 
-    <title>Esri App Challenge</title>
+    <title>Transportation Justice</title>
 
     <!-- Calcite Maps Bootstrap -->
     <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.10.css">
@@ -48,8 +48,6 @@
         <ul class="dropdown-menu" role="menu">
             <li><a role="menuitem" tabindex="0" data-target="#panelInfo" aria-haspopup="true"><span
                     class="glyphicon glyphicon-info-sign"></span> About</a></li>
-            <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLegend" aria-haspopup="true"><span
-                    class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
             <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span
                     class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li>
         </ul>
@@ -101,100 +99,60 @@
 
         <div id="collapseInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingInfo">
             <div class="panel-body">
-                <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#title" aria-controls="title" role="tab" data-toggle="tab">Directions</a></li>
-                    <li role="presentation"><a href="#map" aria-controls="map" role="tab" data-toggle="tab">Service
-                        Area</a></li>
-                </ul>
 
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#home">Directions</a></li>
+                    <li><a data-toggle="tab" href="#menu1">Service Area</a></li>
+                    <li><a data-toggle="tab" href="#menu2">Neighborhood</a></li>
+                </ul>
                 <div class="tab-content">
 
-                    <!-- Tab -Title -->
-
-                    <div role="tabpanel" class="tab-pane active" id="title">
+                    <div id="home" class="tab-pane fade in active">
                         <div class="calcite-form-title">Set Origin & Destination</div>
-                        <div class="form-horizontal calcite-form-padding">
-                            <div class="form-group">
-                                <!--<label for="settingsTitleInput" class="col-xs-3 control-label">Origin</label>-->
-                                <label for="SrcInput" class="col-xs-3">Origin</label>
-                                <div class="col-xs-9">
-                                    <div id="SrcInput" class="calcite-form-search"></div>
-                                    <!--<input type="text" class="form-control" id="settingsTitleInput" placeholder="{Choose origin point, or click on the map}">-->
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <!--<label for="settingsSubTitleInput" class="col-xs-3 control-label">Destination</label>-->
-                                <label for="DstInput" class="col-xs-3">Destination</label>
-                                <div class="col-xs-9">
-                                    <div id="DstInput" class="calcite-form-search"></div>
-                                    <!--<input type="text" class="form-control" id="settingsSubTitleInput" placeholder="{Choose destination point, or click on the map}">-->
-                                </div>
-                            </div>
+                        <label for="SrcInput" class="col-xs-3">Origin</label>
+                        <div class="col-xs-9">
+                            <div id="SrcInput" class="calcite-form-search"></div>
+                        </div>
 
-
-<!--                            <div class="form-group">-->
-<!--                            <label for="progval" >Time box:</label>-->
-<!--                            <input id="progval" data-dojo-type="dijit.form.DateTextBox" />-->
-<!--                            </div>-->
-
-                            <div class="calcite-form-title">Set the origin</div>
-                            <div class="form-horizontal calcite-form-padding">
-                                <div class="form-group">
-                                    <label for="originContainer" class="col-xs-3 control-label">Location</label>
-                                    <div class="col-xs-9">
-                                        <div id="originContainer" class="calcite-form-search"></div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="selectTravelTime" class="col-xs-3 control-label">Time</label>
-                                    <div class="col-xs-9">
-                                        <select id="selectTravelTime" class="form-control">
-                                            <option value="15">15</option>
-                                            <option value="30">30</option>
-                                            <option value="45">45</option>
-                                            <option value="60">60</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                            </div>
+                        <label for="DstInput" class="col-xs-3">Destination</label>
+                        <div class="col-xs-9">
+                            <div id="DstInput" class="calcite-form-search"></div>
                         </div>
 
 
                     </div>
-
-                    <!-- Tab - Map -->
-
-                    <div role="tabpanel" class="tab-pane" id="map">
-
+                    <div id="menu1" class="tab-pane fade">
+                        <div class="calcite-form-title">Set Origin and Travel Time</div>
+                        <label for="originContainer" class="col-xs-3 control-label">Location</label>
+                        <div class="col-xs-9">
+                            <div id="originContainer" class="calcite-form-search"></div>
+                        </div>
+                        <label for="selectTravelTime" class="col-xs-3 control-label">Time (min)</label>
+                        <div class="col-xs-9">
+                            <select id="selectTravelTime" class="form-control">
+                                <option value="15">15</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                                <option value="60">60</option>
+                            </select>
+                        </div>
                     </div>
+                    <div id="menu2" class="tab-pane fade">
+                        <div class="calcite-form-title">Set Destination</div>
+                        <label for="neighborSearchContainer" class="col-xs-3 control-label">Location</label>
+                        <div class="col-xs-9">
+                            <div id="neighborSearchContainer" class="calcite-form-search"></div>
+                        </div>
+                    </div>
+                </div>
 
 
-                </div><!-- /.tab-content -->
+
+
             </div><!-- /.panel-body -->
         </div><!-- /.panel-collapse -->
 
 
-    </div>
-
-    <!-- Panel - Legend -->
-
-    <div id="panelLegend" class="panel collapse">
-        <div id="headingLegend" class="panel-heading" role="tab">
-            <div class="panel-title">
-                <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseLegend"
-                   aria-expanded="false" aria-controls="collapseLegend"><span class="glyphicon glyphicon-list-alt"
-                                                                              aria-hidden="true"></span><span
-                        class="panel-label">Legend</span></a>
-                <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelLegend"><span
-                        class="esri-icon esri-icon-close" aria-hidden="true"></span></a>
-            </div>
-        </div>
-        <div id="collapseLegend" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingLegend">
-            <div class="panel-body">
-                <div id="legendDiv"></div>
-            </div>
-        </div>
     </div>
 
 </div>
@@ -229,7 +187,6 @@
         "esri/widgets/Home",
         "esri/widgets/Zoom",
         "esri/widgets/Search",
-        "esri/widgets/Legend",
         "esri/widgets/ScaleBar",
         "esri/widgets/Attribution",
 
@@ -243,10 +200,13 @@
         "esri/tasks/ServiceAreaTask",
         "esri/tasks/support/ServiceAreaParameters",
         "esri/request",
+        "esri/layers/FeatureLayer",
+        "esri/geometry/projection",
 
         // Bootstrap
         "bootstrap/Collapse",
         "bootstrap/Dropdown",
+        "bootstrap/Tab",
 
         // Calcite Maps
         "calcite-maps/calcitemaps-v0.10",
@@ -257,10 +217,9 @@
         "dijit/form/TimeTextBox",
         "dojo/query",
         "dojo/domReady!"
-    ], function (Map, MapView, Home, Zoom, Search, Legend, ScaleBar, Attribution, Graphic, webMercatorUtils, Locator,
+    ], function (Map, MapView, Home, Zoom, Search, ScaleBar, Attribution, Graphic, webMercatorUtils, Locator,
                  GraphicsLayer, RouteTask, RouteParameters, FeatureSet, ServiceAreaTask, ServiceAreaParameters, esriRequest,
-                 Collapse,
-                 Dropdown, CalciteMaps, CalciteMapArcGISSupport, TimeTextBox, query) {
+                 FeatureLayer, projection, Collapse, Dropdown, Tab, CalciteMaps, CalciteMapArcGISSupport, TimeTextBox, query) {
 
         /******************************************************************
          *
@@ -268,13 +227,19 @@
          *
          ******************************************************************/
 
-        var mapMode = 1;
+        var tabMode = 0;
 
         var routeLayer = new GraphicsLayer();
         // Map
+        var samplePointsLayer = new FeatureLayer({
+            url: "https://services.arcgis.com/4TKcmj8FHh5Vtobt/arcgis/rest/services/Toronto_Neighborhood/FeatureServer/0?token=qIqNnGzb1_pJJtTBEKiD3jDjbruo81X8HFvrYC2EhZ55iizDpQkdwa8BJXEjWVMt4Z-C8fb_C1FWY_gP1vDczmJWnM7rlv31v257XVNTwiKjqT-1tIzzafldzKv-lUQAxIRdlGpO6dmtsR_UuwZuoCP43-TyZNhR7EoLOh3x7z2GnOW-7_nhdUUfN-it1i8biYGKx1TJzePefFdObKGIlc2bCkMCwwDv2lNvone7pAU46BD2AIBOnCz-JFic8AhX"
+        });
+        var neighborhoodLayer = new FeatureLayer({
+            url: "https://services.arcgis.com/4TKcmj8FHh5Vtobt/arcgis/rest/services/Toronto_Neighborhood/FeatureServer/1?token=AQCRI6YYw9G1krHdjvxxP0zCEIQ3IhdYBLLD7-vXkKLouoHHggxTIvTk_2H0JElWW7HSAb2YzLMRmrwy2i5b00GgNb9f87DvIXjw9yJEHyDKKokDQDqMYeDx6xbR8JrCoP8Az8scJwDo8B7KkxaOvPdXPzfb9O97vJiQRjBMOBqMqRGciFa1zqOB7VCMJR-MbqPjXgTtCo7jj50TSUfogQ.."
+        });
         var map = new Map({
             basemap: "dark-gray-vector",
-            layers: [routeLayer] // Add the route layer to the map
+            layers: [routeLayer, neighborhoodLayer] // Add the route layer to the map
         });
 
         // View
@@ -290,9 +255,34 @@
             ui: {components: []}
         });
 
+
+        var polyCentroids;
+        var transitTimeArray = [];
+        var drivingTimeArray = [];
+        var diffTimeArray = [];
         // Popup and panel sync
         mapView.when(function () {
             CalciteMapArcGISSupport.setPopupPanelSync(mapView);
+            //console.log("loaded");
+            //console.log(query('a[data-toggle="tab"]'));
+            query('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                tabMode = query('a[data-toggle="tab"]').indexOf(this);
+                mapView.graphics.removeAll();
+                routeLayer.graphics.removeAll();
+                srcGraphic = 0;
+                dstGraphic = 0;
+            })
+
+            neighborhoodLayer.queryFeatures().then(function(results){
+                // prints an array of all the features in the service to the console
+                //console.log(results.features);
+                polyCentroids = results.features.map(function(feature) {
+                    //return feature.geometry;
+                    return feature.geometry.centroid;
+
+                });
+                //console.log(polyCentroids);
+            });
         });
 
         // Search - add to navbar
@@ -344,11 +334,11 @@
         });
         mapView.ui.add(attribution, "manual");
 
-        // Panel widgets - add legend
-        var legendWidget = new Legend({
-            container: "legendDiv",
-            view: mapView
-        });
+        // // Panel widgets - add legend
+        // var legendWidget = new Legend({
+        //     container: "legendDiv",
+        //     view: mapView
+        // });
 
         var srcGraphic, dstGraphic;
         var srcDropPinActive = false;
@@ -386,13 +376,19 @@
             //var mp = webMercatorUtils.webMercatorToGeographic(point);
             //console.log(mp);
 
-            switch (mapMode) {
+            switch (tabMode) {
                 case 0:
                     addGraphic(event.mapPoint);
                     break;
                 case 1:
                     computeServiceArea(event.mapPoint);
+                    break;
+                case 2:
+                    //ODMatrix(event.mapPoint);
+                    diffODMatrix(event.mapPoint);
+                    break;
             }
+
         });
 
 
@@ -400,7 +396,6 @@
             url:
                 "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
         });
-
         var routeTask = new RouteTask({
             url:
                 "https://utility.arcgis.com/usrsvcs/appservices/skHSU1JsOEZauhMu/rest/services/World/Route/NAServer/Route_World/solve"
@@ -412,7 +407,8 @@
                 // autocasts as new SpatialReference()
                 wkid: 3857
             },
-            startTime: 0
+            startTime: 0,
+            returnDirections: true
         });
 
 
@@ -458,11 +454,10 @@
             if (srcGraphic && dstGraphic) {
                 routeParams.stops.features.pop();
                 routeParams.stops.features.pop();
-
                 routeParams.stops.features.push(srcGraphic);
                 routeParams.stops.features.push(dstGraphic);
 
-                routeParams.startTime = new Date('April 04, 2019 17:00:00');
+                routeParams.startTime = new Date();
                 routeTask.solve(routeParams).then(showRoute);
             }
         }
@@ -525,6 +520,7 @@
             var routeResult = data.routeResults[0].route;
             routeResult.symbol = routeSymbol;
             routeLayer.add(routeResult);
+
         }
 
 
@@ -547,11 +543,10 @@
             timeOfDay: new Date()
         });
 
-        var serviceAreaTravelTime = {
+        var serviceAreaTTAPI = {
             url: "https://api.traveltimeapp.com/v4/time-map",
-
         };
-        var serviceAreaTravelTimeParam = {
+        var serviceAreaTTAPIParam = {
             headers : {
                 "Host": "api.traveltimeapp.com",
                 "Content-Type": "application/json",
@@ -564,7 +559,7 @@
             body : JSON.stringify({
                 "departure_searches": [
                     {
-                        "id": "public transport from Trafalgar Square",
+                        "id": "origin",
                         "coords": {
                             "lat": 51.507609,
                             "lng": -0.128315
@@ -572,26 +567,8 @@
                         "transportation": {
                             "type": "public_transport"
                         },
-                        "departure_time": "2019-04-04T08:00:00Z",
+                        "departure_time": "2019-04-05T012:00:00Z",
                         "travel_time": 900
-                    }
-                ],
-                "arrival_searches": [
-                    {
-                        "id": "public transport to Trafalgar Square",
-                        "coords": {
-                            "lat": 51.507609,
-                            "lng": -0.128315
-                        },
-                        "transportation": {
-                            "type": "public_transport"
-                        },
-                        "arrival_time": "2019-04-04T08:00:00Z",
-                        "travel_time": 900,
-                        "range": {
-                            "enabled": true,
-                            "width": 3600
-                        }
                     }
                 ]
             })
@@ -600,53 +577,60 @@
 
 
         function timetravel(pt) {
-            serviceAreaTravelTimeParam.body = JSON.stringify({
+            serviceAreaTTAPIParam.body = JSON.stringify({
                 "departure_searches": [
                     {
-                        "id": "query1",
+                        "id": "origin",
                         "coords": {
                             "lat": pt.y,
                             "lng": pt.x
                         },
                         "transportation": {
                             "type": "public_transport"
+                            //"walking_time":0
                         },
                         "departure_time": (new Date()).toISOString(),
                         "travel_time": parseInt(query("#selectTravelTime").attr('value')[0])*60
+                        // "range": {
+                        //     "enabled": true,
+                        //     "width": 3600
+                        // }
                     }
                 ]})
-            esriRequest(serviceAreaTravelTime.url, serviceAreaTravelTimeParam).then(function(response){
+            console.log(serviceAreaTTAPIParam.body);
+            esriRequest(serviceAreaTTAPI.url, serviceAreaTTAPIParam).then(function(response){
                 // The requested data
                 console.log(response.data);
-                console.log(response.data.results[0].shapes[0].shell);
+               // console.log(response.data.results[0].shapes[0].shell);
 
-                var ring = [];
-                response.data.results[0].shapes[0].shell.forEach(function(element) {
-                    console.log(element);
-                    ring.push([element.lng, element.lat]);
+                response.data.results[0].shapes.forEach(function(shape) {
+                    var ring = [];
+                    shape.shell.forEach(function (element) {
+                        //console.log(element);
+                        ring.push([element.lng, element.lat]);
+                    });
+
+                    var polygon = {
+                        type: "polygon", // autocasts as new Polygon()
+                        rings: ring
+                    };
+                    var fillSymbol = {
+                        type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                        color: [227, 139, 79, 0.8],
+                        outline: {
+                            // autocasts as new SimpleLineSymbol()
+                            color: [255, 255, 255],
+                            width: 1
+                        }
+                    };
+
+                    // Add the geometry and symbol to a new graphic
+                    var polygonGraphic = new Graphic({
+                        geometry: polygon,
+                        symbol: fillSymbol
+                    });
+                    routeLayer.add(polygonGraphic);
                 });
-
-                var polygon = {
-                    type: "polygon", // autocasts as new Polygon()
-                    rings: ring
-                };
-                var fillSymbol = {
-                    type: "simple-fill", // autocasts as new SimpleFillSymbol()
-                    color: [227, 139, 79, 0.8],
-                    outline: {
-                        // autocasts as new SimpleLineSymbol()
-                        color: [255, 255, 255],
-                        width: 1
-                    }
-                };
-
-                // Add the geometry and symbol to a new graphic
-                var polygonGraphic = new Graphic({
-                    geometry: polygon,
-                    symbol: fillSymbol
-                });
-                routeLayer.add(polygonGraphic);
-
             });
         }
 
@@ -705,6 +689,305 @@
             //     sa.symbol = polygonSymbol;
             //     routeLayer.add(sa);
             // });
+        }
+
+        var neighborSearchWidget = new Search({
+            container: "neighborSearchContainer",
+            view: mapView,
+            locationEnabled: false,
+            autoSelect: false,
+            placeholder: "Choose origin point, or click on the map"
+        });
+
+        // var routeREST = {
+        //     url: "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve",
+        // };
+        var routeTTimeAPI = {
+            url: "https://api.traveltimeapp.com/v4/routes",
+        };
+        var routeTTAPIParam = {
+            headers : {
+                "Host": "api.traveltimeapp.com",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-Application-Id": "118cbc38",
+                "X-Api-Key": "2e338f2d5171f25ed1a497f5eab24ec2"
+            },
+            method: "post",
+            responseType: "json",
+            body : JSON.stringify({
+                "locations": [
+                    {
+                        "id": "London center",
+                        "coords": {
+                            "lat": 51.508930,
+                            "lng": -0.131387
+                        }
+                    },
+                    {
+                        "id": "Hyde Park",
+                        "coords": {
+                            "lat": 51.508824,
+                            "lng": -0.167093
+                        }
+                    }
+                ],
+                "departure_searches": [
+                    {
+                        "id": "departure search example",
+                        "departure_location_id": "London center",
+                        "arrival_location_ids": [
+                            "Hyde Park"
+                        ],
+                        "transportation": {
+                            "type": "public_transport"
+                        },
+                        "departure_time": (new Date()).toISOString(),
+                        "properties": ["travel_time"]
+                    }
+                ]
+            })
+        };
+
+
+        function computeRouteTTAPI(pt) {
+            var mp = webMercatorUtils.webMercatorToGeographic(pt);
+            var outSpatialReference = {
+                wkid: 4326
+            };
+            // projects an array of points
+            //console.log(polyCentroids);
+            //var projectedPoints = projection.project(polyCentroids, outSpatialReference);
+            projection.load().then(function() {
+                var projectedPoints = projection.project(polyCentroids, outSpatialReference);
+                //console.log(projectedPoints);
+
+
+                projectedPoints.forEach(function(poly, i) {
+                    routeTTAPIParam.body = JSON.stringify({
+                        "locations": [
+                            {
+                                "id": "src",
+                                "coords": {
+                                    "lat": poly.y,
+                                    "lng": poly.x
+                                }
+                            },
+                            {
+                                "id": "dst",
+                                "coords": {
+                                    "lat": mp.y,
+                                    "lng": mp.x
+                                }
+                            },
+                        ],
+                        "departure_searches": [{
+                            "id": "departure search example",
+                            "departure_location_id": "src",
+                            "arrival_location_ids": [
+                                "dst"
+                            ],
+                            "transportation": {
+                                "type": "driving"
+                            },
+                            "departure_time": (new Date()).toISOString(),
+                            "properties": ["travel_time", "distance", "route"]
+                        }]
+                    });
+                    //console.log(routeTTAPIParam);
+                    esriRequest(routeTTimeAPI.url, routeTTAPIParam).then(function(response){
+                        // The requested data
+                        //console.log(response.data);
+                        //console.log(response.data.results[0].locations[0].properties[0].travel_time/60);
+
+                        transitTimeArray[i] = response.data.results[0].locations[0].properties[0].travel_time/60;
+                        updateDiff();
+                    }); //request
+                }); //foreach
+            }); //load
+
+        }
+
+        function ODMatrix(pt) {
+            mapView.graphics.removeAll();
+            routeLayer.graphics.removeAll();
+
+            transitTimeArray = new Array(polyCentroids.length).fill(120);
+            drivingTimeArray = new Array(polyCentroids.length).fill(120);
+            diffTimeArray = new Array(polyCentroids.length).fill(120);
+
+            dstGraphic = new Graphic({
+                geometry: pt,
+                symbol: dstMarkerSymbol
+            });
+            mapView.graphics.add(dstGraphic);
+
+            //computeRouteTTAPI(pt);
+
+            polyCentroids.forEach(function(poly, i) {
+                //console.log(poly.spatialReference.wkid);
+                srcGraphic = new Graphic({
+                    geometry: poly,
+                    symbol: srcMarkerSymbol
+                });
+                mapView.graphics.add(srcGraphic);
+                //console.log(poly.distance(pt));
+                routeParams.stops.features.pop();
+                routeParams.stops.features.pop();
+                routeParams.stops.features.push(srcGraphic);
+                routeParams.stops.features.push(dstGraphic);
+
+                routeParams.startTime = new Date();
+                //routeParams.returnDirections = true;
+
+                //console.log(JSON.stringify(routeParams.stops.features));
+
+                //var url = routeREST.url + "?stops={\"features\":" + JSON.stringify(routeParams.stops.features) + "}&f=json&token=6QMfjGCpFn3Fx6ZuRtQrderwkLEap4tQqn27vkqyZ5b_l0y3bLtrXCZO12QbkerWFa6Cq4KN_cvUf7eH3Z6glcYZ_gdv96DW8_hKiU8HZdazLyiCTk1frrZ2cjk_UP-3mpbTJyhAknjqYWL_20CRoA..";
+                //var mpt = webMercatorUtils.webMercatorToGeographic(pt);
+                //var mpoly = webMercatorUtils.webMercatorToGeographic(poly);
+                //var url = routeREST.url + "?stops=" + poly.longitude + "," + poly.latitude + ";" + mpt.y + "," + mpt.x + "&f=json&token=6QMfjGCpFn3Fx6ZuRtQrderwkLEap4tQqn27vkqyZ5b_l0y3bLtrXCZO12QbkerWFa6Cq4KN_cvUf7eH3Z6glcYZ_gdv96DW8_hKiU8HZdazLyiCTk1frrZ2cjk_UP-3mpbTJyhAknjqYWL_20CRoA.."
+                //console.log(url);
+                // esriRequest(url).then(function(response){
+                //     // The requested data
+                //     console.log(response.data);
+                // });
+                //routeTask.solve(routeParams).then(showRoute);
+
+                routeTask.solve(routeParams).then(function(results){
+                    console.log(results.routeResults[0].directions.totalTime);
+                    drivingTimeArray[i] = results.routeResults[0].directions.totalTime;
+                    updateDiff();
+                });
+            });
+
+        }
+
+
+        function diffODMatrix(pt) {
+            mapView.graphics.removeAll();
+            routeLayer.graphics.removeAll();
+
+            transitTimeArray = new Array(polyCentroids.length).fill(1000);
+            drivingTimeArray = new Array(polyCentroids.length).fill(1000);
+            diffTimeArray = new Array(polyCentroids.length).fill(1000);
+
+            var mp = webMercatorUtils.webMercatorToGeographic(pt);
+            var outSpatialReference = {
+                wkid: 4326
+            };
+
+            dstGraphic = new Graphic({
+                geometry: mp,
+                symbol: dstMarkerSymbol
+            });
+            mapView.graphics.add(dstGraphic);
+
+
+            var outSpatialReference = {
+                wkid: 4326
+            };
+            // projects an array of points
+            //console.log(polyCentroids);
+            //var projectedPoints = projection.project(polyCentroids, outSpatialReference);
+            projection.load().then(function() {
+                var projectedPoints = projection.project(polyCentroids, outSpatialReference);
+                //console.log(projectedPoints);
+
+
+                projectedPoints.forEach(function(poly, i) {
+                    routeTTAPIParam.body = JSON.stringify({
+                        "locations": [
+                            {
+                                "id": "src",
+                                "coords": {
+                                    "lat": poly.y,
+                                    "lng": poly.x
+                                }
+                            },
+                            {
+                                "id": "dst",
+                                "coords": {
+                                    "lat": mp.y,
+                                    "lng": mp.x
+                                }
+                            },
+                        ],
+                        "departure_searches": [{
+                            "id": "departure search example",
+                            "departure_location_id": "src",
+                            "arrival_location_ids": [
+                                "dst"
+                            ],
+                            "transportation": {
+                                "type": "driving"
+                            },
+                            "departure_time": (new Date()).toISOString(),
+                            "properties": ["travel_time", "distance", "route"]
+                        }]
+                    });
+                    //console.log(routeTTAPIParam);
+                    esriRequest(routeTTimeAPI.url, routeTTAPIParam).then(function(response){
+                        // The requested data
+                        //console.log(response.data);
+                        //console.log(response.data.results[0].locations[0].properties[0].travel_time/60);
+
+                        transitTimeArray[i] = response.data.results[0].locations[0].properties[0].travel_time/60;
+                        updateDiff(i);
+                    }); //request
+
+
+                    srcGraphic = new Graphic({
+                        geometry: poly,
+                        symbol: srcMarkerSymbol
+                    });
+                    mapView.graphics.add(srcGraphic);
+                    routeParams.stops.features.pop();
+                    routeParams.stops.features.pop();
+                    routeParams.stops.features.push(srcGraphic);
+                    routeParams.stops.features.push(dstGraphic);
+
+                    routeParams.startTime = new Date();
+                    routeTask.solve(routeParams).then(function(results){
+                        //console.log(results.routeResults[0].directions.totalTime);
+                        drivingTimeArray[i] = results.routeResults[0].directions.totalTime;
+                        updateDiff(i);
+                    });
+
+
+
+                }); //foreach
+            }); //load
+        }
+
+
+        function updateDiff(i) {
+            //console.log(diffTimeArray);
+            //for (i=0; i<diffTimeArray.length; i++) {
+                diffTimeArray[i] = Math.abs(transitTimeArray[i] - drivingTimeArray[i]);
+                //diffTimeArray[i] = Math.abs( drivingTimeArray[i]);
+            //}
+            //console.log(diffTimeArray);
+            neighborhoodLayer.queryFeatures().then(function(results){
+                // prints an array of all the features in the service to the console
+                //console.log(results.features);
+                var feature = results.features[i];
+                //results.features.forEach(function(feature, i) {
+                    //return feature.geometry;
+                    var fillSymbol = {
+                        type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                        color: [255, 255, (diffTimeArray[i]/120.0)*255.0, 0.6],
+                    };
+                    //feature.symbol = fillSymbol;
+
+                    // Add the geometry and symbol to a new graphic
+                    var polygonGraphic = new Graphic({
+                        geometry: feature.geometry,
+                        symbol: fillSymbol
+                    });
+                    routeLayer.add(polygonGraphic);
+               // });
+
+            });
         }
 
     });
